@@ -48,7 +48,7 @@ if st.button("ANALISAR PERFIL"):
     if tempo == "Mais de 3 anos": score += 15; positivos.append("Estabilidade profissional")
     elif tempo == "1 a 3 anos": score += 10
     
-    if renda >= 15000: score += 25; positivos.append("Alta renda mensal")streamlit
+    if renda >= 15000: score += 25; positivos.append("Alta renda mensal")
     elif renda >= 4000: score += 10; positivos.append("Renda compatível")
     else: negativos.append("Renda considerada baixa")
 
