@@ -1,5 +1,14 @@
 import streamlit as st
 
+from PIL import Image
+
+# Tenta carregar a imagem (o nome deve ser igual ao arquivo que você subiu)
+try:
+    logo = Image.open("BRT VISTOS.png")
+    st.image(logo, width=200) # Ajuste a largura como quiser
+except:
+    st.write("Logo não encontrada")
+
 # Configuração da página
 st.set_page_config(page_title="BRT VisaScore", page_icon="✈️")
 
