@@ -2,16 +2,24 @@ import streamlit as st
 from PIL import Image
 import urllib.parse
 
+# 1. Configuração da Página
 st.set_page_config(page_title="BRT VisaScore", page_icon="✈️")
 
-# Exibindo Logo
+# 2. Exibindo Logo
 try:
     st.image(Image.open("BRT VISTOS.png"), width=200)
 except:
     st.title("BRT VisaScore")
 
-st.title("BRT VisaScore: Diagnóstico Consular")
+# 3. Título e Breve Explicação
+st.title("BRT VisaScore - Visto de Turismo Americano (B1B2)")
+st.markdown("""
+O **VisaScore** é uma ferramenta de diagnóstico que avalia o seu perfil consular com base em critérios de elegibilidade. 
+O objetivo é identificar pontos fortes e fragilidades no seu histórico, permitindo uma estratégia personalizada para o seu pedido de visto.
+""")
+st.markdown("---")
 
+# 4. Formulário
 col1, col2 = st.columns(2)
 
 with col1:
@@ -27,9 +35,10 @@ with col2:
     visto_usa = st.radio("Já teve visto americano?", ["Sim", "Não"], index=None)
     negado = st.radio("Já teve visto negado?", ["Sim", "Não"], index=None)
 
+# 5. Botão e Lógica
 if st.button("ANALISAR PERFIL"):
     if emprego == "Selecione..." or None in [filhos, imovel, viagens, europa, visto_usa, negado]:
-        st.error("Preencha todos os campos!")
+        st.error("Por favor, preencha todos os campos para realizarmos o diagnóstico!")
     else:
         # 1. Vínculos (0-10)
         vinc = 0
@@ -48,21 +57,20 @@ if st.button("ANALISAR PERFIL"):
         if renda >= 8000: fin = 10
         elif renda >= 4000: fin = 6
         
-        # 4. Plano de Viagem (Simulado como fixo ou adaptável)
-        plano = 5 # Base para um plano padrão
+        # 4. Plano de Viagem (Padrão para análise)
+        plano = 5
         
         # 5. Risco de Imigração (0-10)
         risco = 10
         if negado == "Sim": risco -= 8
         if emprego == "Desempregado": risco -= 5
         
-        total = vinc + hist + fin + plano + risco
+        total = min(vinc + hist + fin + plano + risco, 50)
         
         # Exibição Profissional
         st.divider()
         st.subheader(f"Score Final: {total}/50")
         
-        # Criando tabela de resumo
         data = {
             "Categoria": ["Vínculos com Brasil", "Histórico de Viagens", "Situação Financeira", "Plano de Viagem", "Risco de Imigração"],
             "Pontos": [f"{vinc}/10", f"{hist}/10", f"{fin}/10", f"{plano}/10", f"{risco}/10"]
@@ -73,4 +81,7 @@ if st.button("ANALISAR PERFIL"):
         elif total >= 25: st.warning("Perfil bom, mas precisa de estratégia.")
         else: st.error("Perfil requer análise profunda antes de aplicar.")
 
-        st.link_button("Falar com Especialista", url=f"https://wa.me/5551983117662?text=Fiz o score e tirei {total}/50. Preciso de consultoria.")
+        # Botão WhatsApp
+        st.markdown("---")
+        msg = urllib.parse.quote(f"Olá! Fiz a simulação no BRT VisaScore e obtive o score {total}/50. Gostaria de uma consultoria premium.")
+        st.link_button("Falar com Especialista 💼", url=f"https://wa.me/5551983117662?text={msg}")
