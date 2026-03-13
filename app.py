@@ -23,7 +23,7 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-st.title("BRT VisaScore - Análise de Perfil Consular")
+st.title("BRT VisaScore - Análise de Perfil para Visto de Turismo (B1B2) Americano")
 
 # 3. Organizando em colunas
 # Para o selectbox, usamos uma lista com uma opção "vazia" no início
