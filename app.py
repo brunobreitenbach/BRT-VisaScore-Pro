@@ -52,3 +52,48 @@ if st.button("ANALISAR PERFIL"):
     if None in [nome, idade, estado_civil, emprego, renda, filhos, bens, viagens_ext, visto_usa, negado, proposito, duracao, processo]:
         st.error("Por favor, preencha todos os campos para realizarmos o diagnóstico!")
     else:
+        score = 0
+        # Critérios (Pesos)
+        if emprego in ["CLT", "Empresário"]: score += 20
+        elif emprego == "Autônomo": score += 15
+        
+        if renda and renda > 5000: score += 15
+        elif renda and renda > 2000: score += 10
+        
+        if bens == "Sim": score += 15
+        if filhos == "Sim": score += 5
+        if viagens_ext == "Sim": score += 10
+        if visto_usa == "Sim": score += 10
+        
+        # Penalidades
+        if negado == "Sim": score -= 30
+        if processo == "Sim": score -= 50
+        if emprego == "Desempregado": score -= 10
+        
+        score = max(0, min(100, score))
+
+        # Exibição Visual
+        st.divider()
+        st.metric("Score Final", f"{score}/100")
+        
+        if score >= 70: st.success("Perfil excelente para aplicação.")
+        elif score >= 40: st.warning("Perfil regular. Necessita de estratégia.")
+        else: st.error("Perfil requer análise profunda antes de qualquer tentativa.")
+
+        # 6. Mensagem de WhatsApp (Formatada sem emojis)
+        ficha = (
+            f"\n\nDIAGNOSTICO: {nome}\n"
+            f"Score: {score}/100\n"
+            f"--------------------------\n"
+            f"Idade: {idade} | Civil: {estado_civil}\n"
+            f"Emprego: {emprego} | Renda: R${renda}\n"
+            f"Bens: {bens} | Filhos: {filhos}\n"
+            f"Viagens Ext: {viagens_ext} | Visto USA: {visto_usa}\n"
+            f"Negado: {negado} | Processo: {processo}\n"
+            f"Proposito: {proposito} | Duracao: {duracao} dias\n"
+            "--------------------------\n"
+            "Aguardo contato para análise estratégica."
+        )
+        
+        link = f"https://wa.me/5551983117662?text={urllib.parse.quote('Olá! Fiz a análise no BRT VisaScore.' + ficha)}"
+        st.link_button("Falar com Especialista", url=link)
