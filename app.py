@@ -68,4 +68,38 @@ if st.button("ANALISAR PERFIL"):
         hist = 0
         if europa == "Sim": hist += 6
         elif viagens == "Sim": hist += 4
-        if visto
+        if visto_usa == "Sim": hist += 4
+        
+        fin = 10 if renda >= 8000 else (6 if renda >= 4000 else 0)
+        
+        # Índice de Segurança (10 = Seguro, 0 = Preocupante)
+        seg = 10
+        if negado == "Sim": seg -= 8
+        if emprego == "Desempregado": seg -= 5
+        
+        total = vinc + hist + fin + seg
+        
+        st.divider()
+        st.subheader("Resultado da Análise de Perfil")
+        
+        col_score1, col_score2 = st.columns([1, 2])
+        col_score1.metric("Score Final", f"{total}/40")
+        
+        if total >= 30:
+            col_score2.success("Perfil de alta probabilidade")
+        elif total >= 20:
+            col_score2.warning("Perfil favorável")
+        else:
+            col_score2.error("Perfil com atenção")
+        
+        cols = st.columns(2)
+        detalhes = [("Vínculos com Brasil", vinc), ("Histórico de Viagens", hist), ("Situação Financeira", fin), ("Índice de Segurança", seg)]
+        
+        for i, (cat, pts) in enumerate(detalhes):
+            with cols[i % 2]:
+                st.markdown(f"""<div class="metric-card"><h5 style="margin: 0;">{cat}</h5><p style="font-size: 24px; font-weight: bold; margin: 5px 0;">{pts} / 10</p></div>""", unsafe_allow_html=True)
+
+        st.markdown("---")
+        
+        # Mensagem WhatsApp Premium
+        msg_topo = "Olá! Realizei o diagnóstico no
