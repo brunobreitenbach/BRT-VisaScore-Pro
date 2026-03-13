@@ -72,7 +72,6 @@ if st.button("ANALISAR PERFIL"):
         
         fin = 10 if renda >= 8000 else (6 if renda >= 4000 else 0)
         
-        # Invertendo a lógica: agora é "Índice de Segurança"
         seg = 10
         if negado == "Sim": seg -= 8
         if emprego == "Desempregado": seg -= 5
@@ -85,36 +84,35 @@ if st.button("ANALISAR PERFIL"):
         col_score1, col_score2 = st.columns([1, 2])
         col_score1.metric("Score Final", f"{total}/40")
         
-        if total >= 30: col_score2.success("### Perfil de Alta Probabilidade")
-        elif total >= 20: col_score2.warning("### Perfil Favorável")
-        else: col_score2.error("### Perfil com Atenção")
+        if total >= 30: col_score2.success("Perfil de alta probabilidade")
+        elif total >= 20: col_score2.warning("Perfil favorável")
+        else: col_score2.error("Perfil com atenção")
         
-        # Exibição em Cartões Premium
         cols = st.columns(2)
-        detalhes = [
-            ("Vínculos com Brasil", vinc),
-            ("Histórico de Viagens", hist),
-            ("Situação Financeira", fin),
-            ("Índice de Segurança", seg)
-        ]
+        detalhes = [("Vínculos com Brasil", vinc), ("Histórico de Viagens", hist), ("Situação Financeira", fin), ("Índice de Segurança", seg)]
         
         for i, (cat, pts) in enumerate(detalhes):
             with cols[i % 2]:
-                st.markdown(f"""
-                <div class="metric-card">
-                    <h5 style="margin: 0;">{cat}</h5>
-                    <p style="font-size: 24px; font-weight: bold; margin: 5px 0;">{pts} / 10</p>
-                </div>
-                """, unsafe_allow_html=True)
+                st.markdown(f"""<div class="metric-card"><h5 style="margin: 0;">{cat}</h5><p style="font-size: 24px; font-weight: bold; margin: 5px 0;">{pts} / 10</p></div>""", unsafe_allow_html=True)
 
         st.markdown("---")
         
-        # Mensagem Premium para WhatsApp
+        # Mensagem Premium para WhatsApp (corrigida)
         msg_topo = "Olá! Realizei o diagnóstico no BRT VisaScore e gostaria de avançar com minha consultoria."
-        msg_ficha = f"""
-*DIAGNÓSTICO VISA SCORE: {total}/40*
---------------------------
-*DADOS DO PERFIL:*
-💼 Emprego: {emprego} ({tempo})
-💰 Renda Mensal: R${renda}
-🏠 Imóvel: {im
+        msg_ficha = (
+            f"\n\n*DIAGNÓSTICO VISA SCORE: {total}/40*\n"
+            "--------------------------\n"
+            "*DADOS DO PERFIL:*\n"
+            f"💼 Emprego: {emprego}\n"
+            f"📅 Tempo no emprego: {tempo}\n"
+            f"💰 Renda Mensal: R${renda}\n"
+            f"🏠 Imóvel: {imovel} | 👨‍👩‍👧 Filhos: {filhos}\n"
+            f"✈️ Histórico de Viagens: {viagens}\n"
+            f"🇪🇺 Europa: {europa} | 🇺🇸 Visto EUA: {visto_usa}\n"
+            f"❌ Visto Negado: {negado}\n"
+            "--------------------------\n"
+            "Aguardo seu contato para análise estratégica."
+        )
+        
+        link = f"https://wa.me/5551983117662?text={urllib.parse.quote(msg_topo + msg_ficha)}"
+        st.link_button("Falar com Especialista", url=link)
