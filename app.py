@@ -5,10 +5,10 @@ import urllib.parse
 # 1. Configuração da Página
 st.set_page_config(page_title="BRT VisaScore", page_icon="✈️")
 
-# 2. Estilização Personalizada (Cores #7a0c1e)
+# 2. Estilização Personalizada (Cores #7a0c1e e sem emojis)
 st.markdown("""
     <style>
-    /* Estilização dos botões principais */
+    /* Estilização dos botões para cor #7a0c1e */
     div.stButton > button:first-child {
         background-color: #7a0c1e !important;
         color: white !important;
@@ -19,11 +19,15 @@ st.markdown("""
         background-color: #a3112a !important;
         color: white !important;
     }
-    /* Estilização do link button */
+    /* Estilização específica para o link button */
     a[href^="https://wa.me"] button {
         background-color: #7a0c1e !important;
         color: white !important;
         font-weight: bold;
+    }
+    a[href^="https://wa.me"] button:hover {
+        background-color: #a3112a !important;
+        color: white !important;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -37,7 +41,7 @@ except:
 # 4. Título e Explicação
 st.title("BRT VisaScore - Visto de Turismo Americano (B1B2)")
 st.markdown("""
-O **VisaScore** é uma ferramenta de diagnóstico que avalia o seu perfil consular com base em critérios de elegibilidade. 
+O VisaScore é uma ferramenta de diagnóstico que avalia o seu perfil consular com base em critérios de elegibilidade. 
 O objetivo é identificar pontos fortes e fragilidades no seu histórico, permitindo uma estratégia personalizada para o seu pedido de visto.
 """)
 st.markdown("---")
@@ -97,4 +101,4 @@ if st.button("ANALISAR PERFIL"):
 
         st.markdown("---")
         msg = urllib.parse.quote(f"Olá! Fiz a simulação no BRT VisaScore e obtive o score {total}/50. Gostaria de uma consultoria premium.")
-        st.link_button("Falar com Especialista 💼", url=f"https://wa.me/5551983117662?text={msg}")
+        st.link_button("Falar com Especialista", url=f"https://wa.me/5551983117662?text={msg}")
