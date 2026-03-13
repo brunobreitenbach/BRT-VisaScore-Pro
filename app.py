@@ -68,15 +68,4 @@ if st.button("ANALISAR PERFIL"):
         hist = 0
         if europa == "Sim": hist += 6
         elif viagens == "Sim": hist += 4
-        if visto_usa == "Sim": hist += 4
-        
-        fin = 10 if renda >= 8000 else (6 if renda >= 4000 else 0)
-        
-        seg = 10
-        if negado == "Sim": seg -= 8
-        if emprego == "Desempregado": seg -= 5
-        
-        total = vinc + hist + fin + seg
-        
-        st.divider()
-        st.subheader("Resultado da Análise de
+        if visto
