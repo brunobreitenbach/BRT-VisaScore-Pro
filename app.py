@@ -5,27 +5,23 @@ import urllib.parse
 # 1. Configuração da Página
 st.set_page_config(page_title="BRT VisaScore", page_icon="✈️")
 
-# 2. Estilização: Cor #7a0c1e e Letras maiores nas perguntas
+# 2. Estilização: Cor #7a0c1e, letras maiores nas perguntas e cards Premium
 st.markdown("""
     <style>
-    /* Estilização dos labels (perguntas) */
-    label {
-        font-size: 18px !important;
-        font-weight: 600 !important;
-        color: #333 !important;
-    }
-    /* Estilização dos botões */
+    label { font-size: 18px !important; font-weight: 600 !important; color: #333 !important; }
     div.stButton > button:first-child, a[href^="https://wa.me"] button {
         background-color: #7a0c1e !important;
         color: white !important;
         width: 100%;
         font-weight: bold;
         border: none;
+        padding: 10px;
     }
     div.stButton > button:hover, a[href^="https://wa.me"] button:hover {
         background-color: #a3112a !important;
         color: white !important;
     }
+    .metric-card { padding: 15px; border-radius: 10px; background-color: #f8f9fa; border-left: 5px solid #7a0c1e; margin-bottom: 10px; }
     </style>
     """, unsafe_allow_html=True)
 
@@ -45,7 +41,6 @@ st.markdown("---")
 
 # 5. Formulário
 col1, col2 = st.columns(2)
-
 with col1:
     emprego = st.selectbox("Tipo de emprego", ["Selecione...", "CLT", "Autônomo", "Empresário", "Desempregado"])
     tempo = st.selectbox("Tempo no emprego", ["Selecione...", "Menos de 1 ano", "1 a 3 anos", "Mais de 3 anos"])
@@ -64,6 +59,7 @@ if st.button("ANALISAR PERFIL"):
     if emprego == "Selecione..." or None in [filhos, imovel, viagens, europa, visto_usa, negado]:
         st.error("Por favor, preencha todos os campos para realizarmos o diagnóstico!")
     else:
+        # Pontuação 0-40
         vinc = 0
         if emprego in ["CLT", "Empresário"]: vinc += 5
         if imovel == "Sim": vinc += 3
@@ -82,20 +78,35 @@ if st.button("ANALISAR PERFIL"):
         total = vinc + hist + fin + risco
         
         st.divider()
-        st.subheader(f"Score Final: {total}/40")
+        st.subheader("📊 Resultado da Análise de Perfil")
         
-        data = {
-            "Categoria": ["Vínculos com Brasil", "Histórico de Viagens", "Situação Financeira", "Risco de Imigração"],
-            "Pontos": [f"{vinc}/10", f"{hist}/10", f"{fin}/10", f"{risco}/10"]
-        }
-        st.table(data)
+        col_score1, col_score2 = st.columns([1, 2])
+        col_score1.metric("Score Total", f"{total}/40")
         
-        if total >= 30: st.success("Perfil de alta probabilidade. Pronto para a assessoria!")
-        elif total >= 20: st.warning("Perfil bom, mas precisa de estratégia.")
-        else: st.error("Perfil requer análise profunda antes de aplicar.")
+        if total >= 30: col_score2.success("### Perfil de Alta Probabilidade")
+        elif total >= 20: col_score2.warning("### Perfil Favorável")
+        else: col_score2.error("### Perfil com Atenção")
+        
+        # Exibição em Cartões Premium
+        cols = st.columns(2)
+        detalhes = [
+            ("Vínculos com Brasil", vinc),
+            ("Histórico de Viagens", hist),
+            ("Situação Financeira", fin),
+            ("Risco de Imigração", risco)
+        ]
+        
+        for i, (cat, pts) in enumerate(detalhes):
+            with cols[i % 2]:
+                st.markdown(f"""
+                <div class="metric-card">
+                    <h5 style="margin: 0;">{cat}</h5>
+                    <p style="font-size: 24px; font-weight: bold; margin: 5px 0;">{pts} / 10</p>
+                </div>
+                """, unsafe_allow_html=True)
 
         st.markdown("---")
-        ficha_cliente = f"RESULTADO VISA SCORE: {total}/40%0A%0A--- DADOS DO CLIENTE ---%0AEmprego: {emprego}%0ATempo no emprego: {tempo}%0ARenda: R${renda}%0AFilhos: {filhos}%0AImóvel: {imovel}%0AViagens: {viagens}%0AEuropa: {europa}%0AVisto USA: {visto_usa}%0ANegado: {negado}"
-        link = f"https://wa.me/5551983117662?text=Olá! Fiz a simulação no BRT VisaScore e gostaria de uma consultoria premium. {ficha_cliente}"
-        
+        # Ficha para o WhatsApp
+        ficha = f"RESULTADO: {total}/40%0A%0A--- DADOS ---%0AEmprego: {emprego}%0ATempo: {tempo}%0ARenda: R${renda}%0AFilhos: {filhos}%0AImóvel: {imovel}%0AViagens: {viagens}%0AEuropa: {europa}%0AVisto USA: {visto_usa}%0ANegado: {negado}"
+        link = f"https://wa.me/5551983117662?text=Olá! Fiz a simulação no BRT VisaScore e gostaria de uma consultoria premium. {ficha}"
         st.link_button("Falar com Especialista", url=link)
