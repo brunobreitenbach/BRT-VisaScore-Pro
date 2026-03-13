@@ -5,13 +5,36 @@ import urllib.parse
 # 1. Configuração da Página
 st.set_page_config(page_title="BRT VisaScore", page_icon="✈️")
 
-# 2. Exibindo Logo
+# 2. Estilização Personalizada (Cores #7a0c1e)
+st.markdown("""
+    <style>
+    /* Estilização dos botões principais */
+    div.stButton > button:first-child {
+        background-color: #7a0c1e !important;
+        color: white !important;
+        width: 100%;
+        font-weight: bold;
+    }
+    div.stButton > button:hover {
+        background-color: #a3112a !important;
+        color: white !important;
+    }
+    /* Estilização do link button */
+    a[href^="https://wa.me"] button {
+        background-color: #7a0c1e !important;
+        color: white !important;
+        font-weight: bold;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
+# 3. Exibindo Logo
 try:
     st.image(Image.open("BRT VISTOS.png"), width=200)
 except:
     st.title("BRT VisaScore")
 
-# 3. Título e Breve Explicação
+# 4. Título e Explicação
 st.title("BRT VisaScore - Visto de Turismo Americano (B1B2)")
 st.markdown("""
 O **VisaScore** é uma ferramenta de diagnóstico que avalia o seu perfil consular com base em critérios de elegibilidade. 
@@ -19,7 +42,7 @@ O objetivo é identificar pontos fortes e fragilidades no seu histórico, permit
 """)
 st.markdown("---")
 
-# 4. Formulário
+# 5. Formulário
 col1, col2 = st.columns(2)
 
 with col1:
@@ -35,39 +58,30 @@ with col2:
     visto_usa = st.radio("Já teve visto americano?", ["Sim", "Não"], index=None)
     negado = st.radio("Já teve visto negado?", ["Sim", "Não"], index=None)
 
-# 5. Botão e Lógica
+# 6. Lógica de Análise
 if st.button("ANALISAR PERFIL"):
     if emprego == "Selecione..." or None in [filhos, imovel, viagens, europa, visto_usa, negado]:
         st.error("Por favor, preencha todos os campos para realizarmos o diagnóstico!")
     else:
-        # 1. Vínculos (0-10)
+        # Pontuação 0-50
         vinc = 0
         if emprego in ["CLT", "Empresário"]: vinc += 5
         if imovel == "Sim": vinc += 3
         if filhos == "Sim": vinc += 2
         
-        # 2. Histórico de Viagens (0-10)
         hist = 0
         if europa == "Sim": hist += 6
         elif viagens == "Sim": hist += 4
         if visto_usa == "Sim": hist += 4
         
-        # 3. Financeiro (0-10)
-        fin = 0
-        if renda >= 8000: fin = 10
-        elif renda >= 4000: fin = 6
-        
-        # 4. Plano de Viagem (Padrão para análise)
+        fin = 10 if renda >= 8000 else (6 if renda >= 4000 else 0)
         plano = 5
-        
-        # 5. Risco de Imigração (0-10)
         risco = 10
         if negado == "Sim": risco -= 8
         if emprego == "Desempregado": risco -= 5
         
         total = min(vinc + hist + fin + plano + risco, 50)
         
-        # Exibição Profissional
         st.divider()
         st.subheader(f"Score Final: {total}/50")
         
@@ -81,7 +95,6 @@ if st.button("ANALISAR PERFIL"):
         elif total >= 25: st.warning("Perfil bom, mas precisa de estratégia.")
         else: st.error("Perfil requer análise profunda antes de aplicar.")
 
-        # Botão WhatsApp
         st.markdown("---")
         msg = urllib.parse.quote(f"Olá! Fiz a simulação no BRT VisaScore e obtive o score {total}/50. Gostaria de uma consultoria premium.")
         st.link_button("Falar com Especialista 💼", url=f"https://wa.me/5551983117662?text={msg}")
