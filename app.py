@@ -5,27 +5,17 @@ import urllib.parse
 # 1. Configuração da Página
 st.set_page_config(page_title="BRT VisaScore", page_icon="✈️")
 
-# 2. Estilização Personalizada (Cores #7a0c1e e sem emojis)
+# 2. Estilização: Cor #7a0c1e e remoção de emojis dos botões
 st.markdown("""
     <style>
-    /* Estilização dos botões para cor #7a0c1e */
-    div.stButton > button:first-child {
+    div.stButton > button:first-child, a[href^="https://wa.me"] button {
         background-color: #7a0c1e !important;
         color: white !important;
         width: 100%;
         font-weight: bold;
+        border: none;
     }
-    div.stButton > button:hover {
-        background-color: #a3112a !important;
-        color: white !important;
-    }
-    /* Estilização específica para o link button */
-    a[href^="https://wa.me"] button {
-        background-color: #7a0c1e !important;
-        color: white !important;
-        font-weight: bold;
-    }
-    a[href^="https://wa.me"] button:hover {
+    div.stButton > button:hover, a[href^="https://wa.me"] button:hover {
         background-color: #a3112a !important;
         color: white !important;
     }
@@ -62,43 +52,47 @@ with col2:
     visto_usa = st.radio("Já teve visto americano?", ["Sim", "Não"], index=None)
     negado = st.radio("Já teve visto negado?", ["Sim", "Não"], index=None)
 
-# 6. Lógica de Análise
+# 6. Lógica de Análise (Score total agora 40)
 if st.button("ANALISAR PERFIL"):
     if emprego == "Selecione..." or None in [filhos, imovel, viagens, europa, visto_usa, negado]:
         st.error("Por favor, preencha todos os campos para realizarmos o diagnóstico!")
     else:
-        # Pontuação 0-50
+        # Vínculos (0-10)
         vinc = 0
         if emprego in ["CLT", "Empresário"]: vinc += 5
         if imovel == "Sim": vinc += 3
         if filhos == "Sim": vinc += 2
         
+        # Histórico (0-10)
         hist = 0
         if europa == "Sim": hist += 6
         elif viagens == "Sim": hist += 4
         if visto_usa == "Sim": hist += 4
         
+        # Financeiro (0-10)
         fin = 10 if renda >= 8000 else (6 if renda >= 4000 else 0)
-        plano = 5
+        
+        # Risco (0-10)
         risco = 10
         if negado == "Sim": risco -= 8
         if emprego == "Desempregado": risco -= 5
         
-        total = min(vinc + hist + fin + plano + risco, 50)
+        total = vinc + hist + fin + risco
         
         st.divider()
-        st.subheader(f"Score Final: {total}/50")
+        st.subheader(f"Score Final: {total}/40")
         
+        # Tabela sem o Plano de Viagem
         data = {
-            "Categoria": ["Vínculos com Brasil", "Histórico de Viagens", "Situação Financeira", "Plano de Viagem", "Risco de Imigração"],
-            "Pontos": [f"{vinc}/10", f"{hist}/10", f"{fin}/10", f"{plano}/10", f"{risco}/10"]
+            "Categoria": ["Vínculos com Brasil", "Histórico de Viagens", "Situação Financeira", "Risco de Imigração"],
+            "Pontos": [f"{vinc}/10", f"{hist}/10", f"{fin}/10", f"{risco}/10"]
         }
         st.table(data)
         
-        if total >= 35: st.success("Perfil de alta probabilidade. Pronto para a assessoria!")
-        elif total >= 25: st.warning("Perfil bom, mas precisa de estratégia.")
+        if total >= 30: st.success("Perfil de alta probabilidade. Pronto para a assessoria!")
+        elif total >= 20: st.warning("Perfil bom, mas precisa de estratégia.")
         else: st.error("Perfil requer análise profunda antes de aplicar.")
 
         st.markdown("---")
-        msg = urllib.parse.quote(f"Olá! Fiz a simulação no BRT VisaScore e obtive o score {total}/50. Gostaria de uma consultoria premium.")
+        msg = urllib.parse.quote(f"Olá! Fiz a simulação no BRT VisaScore e obtive o score {total}/40. Gostaria de uma consultoria premium.")
         st.link_button("Falar com Especialista", url=f"https://wa.me/5551983117662?text={msg}")
