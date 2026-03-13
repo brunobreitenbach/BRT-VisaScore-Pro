@@ -5,7 +5,7 @@ import urllib.parse
 # 1. Configuração da Página
 st.set_page_config(page_title="BRT VisaScore", page_icon="✈️")
 
-# 2. Estilização: Cor #7a0c1e, letras maiores nas perguntas e cards Premium
+# 2. Estilização: Cor #7a0c1e, letras maiores e cards Premium
 st.markdown("""
     <style>
     label { font-size: 18px !important; font-weight: 600 !important; color: #333 !important; }
@@ -71,17 +71,19 @@ if st.button("ANALISAR PERFIL"):
         if visto_usa == "Sim": hist += 4
         
         fin = 10 if renda >= 8000 else (6 if renda >= 4000 else 0)
-        risco = 10
-        if negado == "Sim": risco -= 8
-        if emprego == "Desempregado": risco -= 5
         
-        total = vinc + hist + fin + risco
+        # Invertendo a lógica: agora é "Índice de Segurança"
+        seg = 10
+        if negado == "Sim": seg -= 8
+        if emprego == "Desempregado": seg -= 5
+        
+        total = vinc + hist + fin + seg
         
         st.divider()
         st.subheader("📊 Resultado da Análise de Perfil")
         
         col_score1, col_score2 = st.columns([1, 2])
-        col_score1.metric("Score Total", f"{total}/40")
+        col_score1.metric("Score Final", f"{total}/40")
         
         if total >= 30: col_score2.success("### Perfil de Alta Probabilidade")
         elif total >= 20: col_score2.warning("### Perfil Favorável")
@@ -93,7 +95,7 @@ if st.button("ANALISAR PERFIL"):
             ("Vínculos com Brasil", vinc),
             ("Histórico de Viagens", hist),
             ("Situação Financeira", fin),
-            ("Risco de Imigração", risco)
+            ("Índice de Segurança", seg)
         ]
         
         for i, (cat, pts) in enumerate(detalhes):
@@ -106,7 +108,13 @@ if st.button("ANALISAR PERFIL"):
                 """, unsafe_allow_html=True)
 
         st.markdown("---")
-        # Ficha para o WhatsApp
-        ficha = f"RESULTADO: {total}/40%0A%0A--- DADOS ---%0AEmprego: {emprego}%0ATempo: {tempo}%0ARenda: R${renda}%0AFilhos: {filhos}%0AImóvel: {imovel}%0AViagens: {viagens}%0AEuropa: {europa}%0AVisto USA: {visto_usa}%0ANegado: {negado}"
-        link = f"https://wa.me/5551983117662?text=Olá! Fiz a simulação no BRT VisaScore e gostaria de uma consultoria premium. {ficha}"
-        st.link_button("Falar com Especialista", url=link)
+        
+        # Mensagem Premium para WhatsApp
+        msg_topo = "Olá! Realizei o diagnóstico no BRT VisaScore e gostaria de avançar com minha consultoria."
+        msg_ficha = f"""
+*DIAGNÓSTICO VISA SCORE: {total}/40*
+--------------------------
+*DADOS DO PERFIL:*
+💼 Emprego: {emprego} ({tempo})
+💰 Renda Mensal: R${renda}
+🏠 Imóvel: {im
